@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Body Count Detector</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px #ff007a;
+    }
+
+    input, select, button {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #ff007a;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .scanner-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: red;
+      animation: scan 2s infinite;
+    }
+
+    @keyframes scan {
+      0% { top: 0; }
+      50% { top: 100%; }
+      100% { top: 0; }
+    }
+
+    .result-box {
+      margin-top: 20px;
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .shake {
+        animation: shake-screen 0.5s infinite;
+    }
+
+    @keyframes shake-screen {
+        0% { transform: translate(2px, 2px); }
+        25% { transform: translate(-2px, 3px); }
+        50% { transform: translate(2px, -2px); }
+        75% { transform: translate(-1px, -3px); }
+        100% { transform: translate(1px, 2px); }
+    }
+
+  </style>
+</head>
+<body>
+    <audio id="moan" src="sad-violin-made-with-Voicemod.mp3"></audio>
+    <audio id="violin" src="loud-indian-music-made-with-Voicemod.mp3"></audio>
+    <audio id="rizz" src="john-cena-made-with-Voicemod.mp3"></audio>
+    <audio id="scannerSound" src="dream-speedrun-minecraf-made-with-Voicemod.mp3" loop></audio>
+
+  <div class="container" id="form-container">
+    <h1>🔍 Body Count Detector</h1>
+    <p>Enter your info for a super serious, definitely legit scan 😏</p>
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="number" id="age" placeholder="Your Age" required />
+    <select id="race">
+      <option>Indian</option>
+      <option>White</option>
+      <option>Asian</option>
+      <option>Black</option>
+      <option>Muslim</option>
+      <option>Alien 👽</option>
+      <option>Giga Chad</option>
+    </select>
+    <button onclick="startScan()">Start Scan</button>
+  </div>
+
+  <div class="container hidden" id="scanner-container">
+    <h2>Scanning face of <span id="scan-name"></span>...</h2>
+    <div style="position:relative;">
+      <video id="video" autoplay muted></video>
+      <div class="scanner-line"></div>
+    </div>
+    <p id="scan-progress">Analyzing: 0%</p>
+  </div>
+
+  <div class="container hidden" id="result-container">
+    <h2>Result for <span id="result-name"></span>:</h2>
+    <div class="result-box">
+      <h1 id="body-count">Body Count: ?</h1>
+      <p id="comment">Loading...</p>
+    </div>
+    <button onclick="reset()">New Scan</button>
+
+  <script>
+    const video = document.getElementById('video');
+
+    function startScan() {
+        const name = document.getElementById('name').value.trim();
+        const age = document.getElementById('age').value.trim();
+        const race = document.getElementById('race').value;
+
+        if (!name || !age) {
+            alert("Please enter name and age");
+            return;
+        }
+
+        // Request camera access first
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+            video.srcObject = stream;
+
+            document.getElementById('form-container').classList.add('hidden');
+            document.getElementById('scanner-container').classList.remove('hidden');
+            document.getElementById('scan-name').innerText = name;
+
+            // Start scanning sound
+            const scannerSound = document.getElementById('scannerSound');
+            scannerSound.currentTime = 0;
+            scannerSound.play();
+
+            // 10-second scanning progress
+            let progress = 0;
+            const progressText = document.getElementById('scan-progress');
+            const totalTime = 10000; // 10 seconds
+            const intervalTime = 100; // every 100ms
+            const increment = 100 / (totalTime / intervalTime); // = 1
+
+            const scanInterval = setInterval(() => {
+                progress += increment;
+                if (progress >= 100) {
+                progress = 100;
+                clearInterval(scanInterval);
+
+                // Stop sound
+                scannerSound.pause();
+                scannerSound.currentTime = 0;
+
+                setTimeout(() => {
+                    showResult(name, age, race);
+                }, 500);
+                }
+                progressText.innerText = `Analyzing: ${Math.floor(progress)}%`;
+            }, intervalTime);
+            })
+            .catch((err) => {
+            alert("Camera access is required to use this feature. Please allow camera access.");
+            });
+        }
+
+
+
+    function showResult(name, age, race) {
+        document.getElementById('scanner-container').classList.add('hidden');
+        document.getElementById('result-container').classList.remove('hidden');
+        document.getElementById('result-name').innerText = name;
+
+        const count = Math.floor(Math.random() * 51); // 0 to 50
+        const comments = [
+            "Go get some bitches, you nerd 🤓",
+            " Even your hand feels sorry for you 🥲",
+            " You tried. Respect 😌",
+            " Just enough to brag at hostel parties 🍻",
+            "Lover boy detected 😎",
+            " Damn bro, you outside fr 😏",
+            " You’re either hot or a liar 🔥",
+            " You’re a walking STD 😂",
+            "Legendary. Sit down, Casanova 🐐"
+        ];
+
+        let msg = "";
+        if (count === 0) msg = comments[0];
+        else if (count <= 2) msg = comments[1];
+        else if (count <= 5) msg = comments[2];
+        else if (count <= 10) msg = comments[3];
+        else if (count <= 15) msg = comments[4];
+        else if (count <= 25) msg = comments[5];
+        else if (count <= 35) msg = comments[6];
+        else if (count <= 49) msg = comments[7];
+        else msg = comments[8];
+
+        document.getElementById('body-count').innerText = `Body Count: ${count}`;
+        document.getElementById('comment').innerText = msg;
+
+        // 🔊 Auto play sound based on score
+        const moan = document.getElementById('moan');
+        const violin = document.getElementById('violin');
+        const rizz = document.getElementById('rizz');
+
+        if (count === 0) {
+            violin.play();
+        } else if (count <= 39) {
+            moan.play();
+        } else {
+            rizz.play();
+
+            // 🔥 Confetti + Shake for 7 seconds
+            confetti({
+              particleCount: 150,
+              startVelocity: 60,
+              spread: 90,
+              origin: { y: 0.6 }
+            });
+
+
+            // Apply shake to body
+            document.body.classList.add('shake');
+
+            // 📳 Mobile vibration
+            if (navigator.vibrate) {
+                navigator.vibrate([300, 150, 300, 150, 500]);
+            }
+            
+            // 👑 Rizz glow
+            document.getElementById('body-count').classList.add('rizz-glow');
+
+            // Stop after 7 seconds
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+            }, 7000);
+
+        }
+
+    }
+
+
+    function reset() {
+      // Stop video stream
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+      }
+
+      document.getElementById('form-container').classList.remove('hidden');
+      document.getElementById('scanner-container').classList.add('hidden');
+      document.getElementById('result-container').classList.add('hidden');
+
+      document.getElementById('name').value = "";
+      document.getElementById('age').value = "";
+    }
+
+    function playSound(type) {
+        const audio = document.getElementById(type);
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play();
+        }
+    }
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</body>
+</html>
